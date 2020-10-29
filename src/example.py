@@ -1,6 +1,7 @@
 import bm3d
 import imageio
 import numpy as np
+import sewar
 
 
 background_noise = "/home/yguan/data/SI/CUT_CH1_no_signal/test02978_x13020_y17820_w512_h512.tif"
@@ -27,6 +28,11 @@ print("max: {}, min: {}".format(combined.max(), combined.min()))
 clean = (img_fore - combined.min())/(combined.max() - combined.min())
 
 img_denoised = bm3d.bm3d(combined, sigma_psd=30/255, stage_arg=bm3d.BM3DStages.HARD_THRESHOLDING)
+
+psnr = sewar.full_ref.psnr((clean*255).astype(np.uint8), (img_denoised*255).astype(np.uint8))
+ssim = sewar.full_ref.ssim((clean*255).astype(np.uint8), (img_denoised*255).astype(np.uint8))
+
+print("psnr: {}, ssim: {}".format(psnr, ssim))
 
 imageio.imwrite('denoised.png', img_denoised)
 imageio.imwrite('clean.png', clean)
